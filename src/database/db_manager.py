@@ -145,3 +145,47 @@ def archive_notification(user_id: int, message_text: str, sent_at: str) -> None:
 
     conn.commit()
     conn.close()
+
+
+def get_user_subscriptions(user_id: int) -> list[str]:
+    """Возвращает список тикеров, на которые подписан пользователь"""
+    conn = sqlite3.connect(DB_PATH, timeout=20)
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT a.ticker 
+    FROM subscriptions s
+    JOIN assets a ON s.asset_id = a.id
+    WHERE s.user_id = ?
+    '''
+    cursor.execute(query, (user_id,))
+    rows = cursor.fetchall()
+
+    conn.close()
+    return [row[0] for row in rows]
+
+def remove_subscription(user_id: int, ticker: str) -> bool:
+    """Удаляет подписку пользователя на монету. Возвращает True, если подписка была удалена"""
+    conn = sqlite3.connect(DB_PATH, timeout=20)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON;")
+
+    cursor.execute("SELECT id FROM assets WHERE ticker = ?", (ticker.upper(),))
+    asset_row = cursor.fetchone()
+
+    if not asset_row:
+        conn.close()
+        return False
+
+    asset_id = asset_row[0]
+
+    cursor.execute(
+        "DELETE FROM subscriptions WHERE user_id = ? AND asset_id = ?",
+        (user_id, asset_id)
+    )
+
+    changes = conn.total_changes
+    conn.commit()
+    conn.close()
+
+    return changes > 0

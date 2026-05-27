@@ -3,7 +3,14 @@ from aiogram.types import Message
 from aiogram.filters import Command
 import asyncio
 from src.config import BOT_TOKEN
-from src.database.db_manager import get_all_assets, get_last_price, add_user, add_subscription
+from src.database.db_manager import (
+    get_all_assets,
+    get_last_price,
+    add_user,
+    add_subscription,
+    get_user_subscriptions,
+    remove_subscription
+)
 from datetime import datetime, timezone
 
 bot = Bot(token=BOT_TOKEN)
@@ -67,6 +74,44 @@ async def subscribe_cmd(msg: Message):
         await msg.answer(f"✅ Ты успешно подписался на уведомления по **{ticker}**!", parse_mode="Markdown")
     else:
         await msg.answer(f"❌ Не удалось подписаться. Проверь, правильно ли указан тикер (например, `BTC/USDT`).", parse_mode="Markdown")
+
+@dp.message(Command('my_subscriptions'))
+async def my_subscriptions_cmd(msg: Message):
+    user_id = msg.from_user.id
+    subscriptions = get_user_subscriptions(user_id)
+    if not subscriptions:
+        await msg.answer(
+            "⚠️ У тебя пока нет активных подписок.\n\n"
+            "Чтобы подписаться, используй: `/subscribe ТИКЕР`",
+            parse_mode="Markdown"
+        )
+        return
+
+    response = "📋 **Твои активные подписки:**\n\n"
+    for ticker in subscriptions:
+        response += f"🔹 `{ticker}`\n"
+
+    response += "\nЧтобы отписаться, отправь: \n`/unsubscribe ТИКЕР`"
+    await msg.answer(response, parse_mode="Markdown")
+
+@dp.message(Command('unsubscribe'))
+async def unsubscribe_cmd(msg: Message):
+    args = msg.text.split()
+    if len(args) < 2:
+        await msg.answer(
+            "⚠️ Укажите тикер для отписки.\n"
+            "Пример: `/unsubscribe btc/usdt`",
+            parse_mode="Markdown"
+        )
+        return
+
+    ticker = args[1].upper()
+    user_id = msg.from_user.id
+
+    if remove_subscription(user_id, ticker):
+        await msg.answer(f"✅ Успешно отписался от уведомлений по **{ticker}**!", parse_mode="Markdown")
+    else:
+        await msg.answer(f"❌ Не нашли у тебя активной подписки на **{ticker}**. Проверь список через `/my_subscriptions`", parse_mode="Markdown")
 
 async def main():
     await dp.start_polling(bot)
