@@ -42,16 +42,6 @@ def db_init():
     )''')
 
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS anomalies_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    asset_id INTEGER,
-    percent_change REAL NOT NULL,
-    price_at_anomaly REAL NOT NULL,
-    timestamp TEXT NOT NULL,
-    FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
-    )''')
-
-    cursor.execute('''
     CREATE TABLE IF NOT EXISTS analytics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     asset_id INTEGER,

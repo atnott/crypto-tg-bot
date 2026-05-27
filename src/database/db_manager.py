@@ -1,8 +1,9 @@
 from src.config import DB_PATH
 import sqlite3
+from datetime import datetime, timezone
 
 def get_all_assets() -> list[tuple]:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20)
     cursor = conn.cursor()
 
     assets = cursor.execute('SELECT id, ticker FROM assets').fetchall()
@@ -11,8 +12,11 @@ def get_all_assets() -> list[tuple]:
     return assets
 
 def add_price_record(asset_id: int, price: float, volume: float, timestamp: str) -> None:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20)
     cursor = conn.cursor()
+
+    if not timestamp:
+        timestamp = datetime.now(timezone.utc).isoformat()
 
     query = '''INSERT INTO price_history (asset_id, price, volume, timestamp) VALUES (?, ?, ?, ?)'''
     cursor.execute(query, (asset_id, price, volume, timestamp))
@@ -22,7 +26,7 @@ def add_price_record(asset_id: int, price: float, volume: float, timestamp: str)
 
 
 def get_last_price(asset_id: int) -> tuple:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20)
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -38,7 +42,7 @@ def get_last_price(asset_id: int) -> tuple:
     return row
 
 def get_recent_prices(asset_id: int, limit: int = 10) -> list[tuple]:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20)
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -56,7 +60,7 @@ def get_recent_prices(asset_id: int, limit: int = 10) -> list[tuple]:
 
 def add_user(user_id: int, username: str | None, registered_at: str) -> None:
     """Регистрирует нового пользователя в базе данных, если его там еще нет"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20)
     cursor = conn.cursor()
     cursor.execute("PRAGMA foreign_keys = ON;")
 
@@ -68,7 +72,7 @@ def add_user(user_id: int, username: str | None, registered_at: str) -> None:
 
 def add_subscription(user_id: int, ticker: str) -> bool:
     """Подписывает пользователя на монету по её тикеру. Возвращает True в случае успеха"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20)
     cursor = conn.cursor()
     cursor.execute("PRAGMA foreign_keys = ON;")
 
@@ -97,7 +101,7 @@ def add_subscription(user_id: int, ticker: str) -> bool:
 
 def get_subscribers(asset_id: int) -> list[int]:
     """Возвращает список Telegram ID пользователей, подписанных на данный актив"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20)
     cursor = conn.cursor()
 
     cursor.execute('''SELECT user_id FROM subscriptions WHERE asset_id = ?''', (asset_id,))
@@ -108,9 +112,12 @@ def get_subscribers(asset_id: int) -> list[int]:
 
 def log_analytics(asset_id: int, direction: str, is_anomaly: bool, description: str, created_at: str) -> None:
     """Записывает данные анализа в таблицу analytics"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20)
     cursor = conn.cursor()
     cursor.execute("PRAGMA foreign_keys = ON;")
+
+    if not created_at:
+        created_at = datetime.now(timezone.utc).isoformat()
 
     query = '''
         INSERT INTO analytics (asset_id, predicted_direction, is_anomaly, anomaly_description, created_at) 
