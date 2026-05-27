@@ -105,3 +105,18 @@ def get_subscribers(asset_id: int) -> list[int]:
 
     conn.close()
     return [row[0] for row in rows]
+
+def log_anomaly(asset_id: int, percent_change: float, price_at_anomaly: float, timestamp: str) -> None:
+    """Записывает обнаруженную аномалию в историю логов"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON;")
+
+    query = '''
+    INSERT INTO anomalies_log (asset_id, percent_change, price_at_anomaly, timestamp) 
+    VALUES (?, ?, ?, ?)
+    '''
+    cursor.execute(query, (asset_id, percent_change, price_at_anomaly, timestamp))
+
+    conn.commit()
+    conn.close()

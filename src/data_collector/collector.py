@@ -18,6 +18,8 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
 
         is_anomaly, change = check_volatility(asset_id)
         if is_anomaly:
+            from src.database.db_manager import log_anomaly
+            log_anomaly(asset_id, change, price, timestamp)
 
             alert_msg = (
                 f"⚠️ **АНОМАЛИЯ по {ticker}!**\n\n"
