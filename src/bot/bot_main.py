@@ -2,8 +2,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.types import Message
 from aiogram.filters import Command
 import asyncio
-
-token = '8818754908:AAGjWKLA8Ki_kLIdlpodbihBW_uQkZIqIhY'
+from src.config import BOT_TOKEN as token, DB_PATH
+import sqlite3
 
 bot = Bot(token=token)
 dp = Dispatcher()

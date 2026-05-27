@@ -1,7 +1,7 @@
 import ccxt
 import time
 import sqlite3
-import os
+from src.config import DB_PATH as db_path
 
 exchange = ccxt.kraken()
 
@@ -20,9 +20,6 @@ def fetch_market_data(db_path: str) -> None:
     conn.close()
 
 if __name__ == '__main__':
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, '..', '..', 'data', 'crypto_bot.sqlite')
 
     while True:
         fetch_market_data(db_path)

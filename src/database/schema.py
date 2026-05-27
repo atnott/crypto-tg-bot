@@ -1,10 +1,7 @@
 import sqlite3
-import os
+from src.config import DB_PATH as db_path
 
 def db_init():
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, '..', '..', 'data', 'crypto_bot.sqlite')
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
