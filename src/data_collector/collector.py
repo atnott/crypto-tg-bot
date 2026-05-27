@@ -1,6 +1,6 @@
 import ccxt
 import time
-from src.database.db_manager import get_all_assets, add_price_record
+from src.database.db_manager import get_all_assets, add_price_record, log_analytics, get_subscribers
 from src.analytics.analyzer import check_volatility
 from src.bot.bot_main import bot
 from src.config import ADMIN_ID
@@ -17,10 +17,15 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
         add_price_record(asset_id, price, volume, timestamp)
 
         is_anomaly, change = check_volatility(asset_id)
-        if is_anomaly:
-            from src.database.db_manager import log_anomaly
-            log_anomaly(asset_id, change, price, timestamp)
 
+        direction = "PUMP" if change > 0 else "DUMP"
+        if abs(change) < 0.1:
+            direction = "STABLE"
+        description = f"Волатильность составила {change:.2f}%"
+
+        log_analytics(asset_id, direction, is_anomaly, description, timestamp)
+
+        if is_anomaly:
             alert_msg = (
                 f"⚠️ **АНОМАЛИЯ по {ticker}!**\n\n"
                 f"📈 Изменение: `{change:.2f}%`\n"
@@ -28,7 +33,6 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
                 f"🕒 Время: {timestamp}"
             )
 
-            from src.database.db_manager import get_subscribers
             subscribers = get_subscribers(asset_id)
 
             for sub_id in subscribers:
