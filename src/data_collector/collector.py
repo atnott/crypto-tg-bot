@@ -1,6 +1,6 @@
 import ccxt
 import time
-from src.database.db_manager import get_all_assets, add_price_record, log_analytics, get_subscribers
+from src.database.db_manager import get_all_assets, add_price_record, log_analytics, get_subscribers, archive_notification
 from src.analytics.analyzer import check_volatility
 from src.bot.bot_main import bot
 from src.config import ADMIN_ID
@@ -38,6 +38,8 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
             for sub_id in subscribers:
                 try:
                     await bot.send_message(chat_id=sub_id, text=alert_msg, parse_mode="Markdown")
+                    archive_notification(sub_id, alert_msg, timestamp)
+
                 except Exception as send_err:
                     print(f"Не удалось отправить сообщение пользователю {sub_id}: {send_err}")
 

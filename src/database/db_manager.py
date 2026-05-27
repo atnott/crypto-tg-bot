@@ -127,3 +127,21 @@ def log_analytics(asset_id: int, direction: str, is_anomaly: bool, description: 
 
     conn.commit()
     conn.close()
+
+def archive_notification(user_id: int, message_text: str, sent_at: str) -> None:
+    conn = sqlite3.connect(DB_PATH, timeout=20)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON;")
+
+    if not sent_at:
+        from datetime import datetime, timezone
+        sent_at = datetime.now(timezone.utc).isoformat()
+
+    query = '''
+            INSERT INTO notifications_archive (user_id, message_text, sent_at) 
+            VALUES (?, ?, ?)
+        '''
+    cursor.execute(query, (user_id, message_text, sent_at))
+
+    conn.commit()
+    conn.close()
