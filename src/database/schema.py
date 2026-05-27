@@ -21,7 +21,8 @@ def db_init():
     asset_id INTEGER,
     price REAL,
     volume REAL,
-    timestamp TEXT
+    timestamp TEXT,
+    FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
     )''')
 
     cursor.execute('''
@@ -48,6 +49,26 @@ def db_init():
     price_at_anomaly REAL NOT NULL,
     timestamp TEXT NOT NULL,
     FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
+    )''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS analytics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    asset_id INTEGER,
+    predicted_direction TEXT,
+    is_anomaly BOOLEAN,
+    anomaly_description TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
+    )''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS notifications_archive (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    message_text TEXT NOT NULL,
+    sent_at TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )''')
 
     conn.commit()
