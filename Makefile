@@ -7,6 +7,7 @@ help:
 	@echo "  make collector  - Запустить асинхронный сборщик маркет-даты"
 	@echo "  make bot        - Запустить Telegram-бота"
 	@echo "  make clean      - Очистить кэш компиляции Python (__pycache__)"
+	@echo "  make init       - Создание таблиц"
 
 seed:
 	$(PYTHON) -m src.database.seed
@@ -19,3 +20,6 @@ bot:
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
+
+init:
+	$(PYTHON) -m src.database.schema
