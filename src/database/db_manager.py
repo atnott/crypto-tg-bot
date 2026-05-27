@@ -36,3 +36,20 @@ def get_last_price(asset_id: int) -> tuple:
     row = cursor.fetchone()
     conn.close()
     return row
+
+def get_recent_prices(asset_id: int, limit: int = 10) -> list[tuple]:
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute('''
+    SELECT price, timestamp 
+    FROM price_history 
+    WHERE asset_id = ? 
+    ORDER BY id DESC 
+    LIMIT ?
+    ''', (asset_id, limit))
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    return rows[::-1]
