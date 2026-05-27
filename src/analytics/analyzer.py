@@ -13,7 +13,7 @@ def check_volatility(asset_id: int) -> tuple[bool, float]:
         return (False, 0.0)
 
     percent_change = (current_price - old_price) / old_price * 100
-    if abs(percent_change) >= 0.5:
+    if abs(percent_change) >= 0.001:
         return (True, percent_change)
 
     return (False, percent_change)
