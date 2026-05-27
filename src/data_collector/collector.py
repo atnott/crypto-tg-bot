@@ -25,7 +25,7 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
                 f"📊 Направление тренда: `{direction}`\n"
                 f"📝 {description}\n"
                 f"💰 Текущая цена: `{price}`\n"
-                f"🕒 Время: `{timestamp}`"
+                f"`{timestamp if not timestamp is None else ''}`"
             )
 
             subscribers = get_subscribers(asset_id)
