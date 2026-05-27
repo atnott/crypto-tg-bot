@@ -2,10 +2,10 @@ from aiogram import Bot, Dispatcher
 from aiogram.types import Message
 from aiogram.filters import Command
 import asyncio
-from src.config import BOT_TOKEN as token, DB_PATH
-import sqlite3
+from src.config import BOT_TOKEN
+from src.database.db_manager import get_all_assets, get_last_price
 
-bot = Bot(token=token)
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 @dp.message(Command('start'))
@@ -14,26 +14,30 @@ async def start_cmd(msg: Message):
 
 @dp.message(Command('status'))
 async def status_cmd(msg: Message):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    assets = get_all_assets()
 
-    cursor.execute('''SELECT price, volume, timestamp FROM price_history ORDER BY id DESC LIMIT 1''')
-    row = cursor.fetchone()
-
-    if not row:
-        await msg.answer('Данные еще не собраны!')
+    if not assets:
+        await msg.answer('В базе данных нет отслеживаемых активов')
         return
-    else:
-        price, volume, timestamp = row
 
-        response = (
-            f"📊 **BTC/USDT**\n\n"
-            f"💰 Последняя цена: `{price}`\n"
-            f"📈 Объем торгов: `{volume}`\n"
-            f"🕒 Время запроса: `{timestamp}`"
-        )
+    response_lines = ["📊 **Актуальный статус рынка:**\n"]
 
-        await msg.answer(response, parse_mode='Markdown')
+    for asset_id, ticker in assets:
+        row = get_last_price(asset_id)
+
+        if row:
+            price, volume, timestamp = row
+            response_lines.append(
+                f"🔹 **{ticker}**\n"
+                f"💰 Последняя цена: `{price}`\n"
+                f"📈 Объем торгов: `{volume}`\n"
+                f"🕒 Время запроса: {timestamp}\n"
+            )
+        else:
+            response_lines.append(f"🔹 **{ticker}**: Данные еще не собраны.\n")
+
+    full_response = "\n".join(response_lines)
+    await msg.answer(full_response, parse_mode='Markdown')
 
 async def main():
     await dp.start_polling(bot)
