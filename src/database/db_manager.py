@@ -53,3 +53,55 @@ def get_recent_prices(asset_id: int, limit: int = 10) -> list[tuple]:
     conn.close()
 
     return rows[::-1]
+
+def add_user(user_id: int, username: str | None, registered_at: str) -> None:
+    """Регистрирует нового пользователя в базе данных, если его там еще нет"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON;")
+
+    query = '''INSERT OR IGNORE INTO users (id, username, registered_at) VALUES (?, ?, ?)'''
+    cursor.execute(query, (user_id, username, registered_at))
+
+    conn.commit()
+    conn.close()
+
+def add_subscription(user_id: int, ticker: str) -> bool:
+    """Подписывает пользователя на монету по её тикеру. Возвращает True в случае успеха"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON;")
+
+    cursor.execute('''SELECT id FROM assets WHERE ticker = ?''', (ticker.upper(),))
+    asset_row = cursor.fetchone()
+
+    if not asset_row:
+        conn.close()
+        return False
+
+    asset_id = asset_row[0]
+
+    try:
+        cursor.execute(
+            "INSERT OR IGNORE INTO subscriptions (user_id, asset_id) VALUES (?, ?)",
+            (user_id, asset_id)
+        )
+
+        conn.commit()
+        success = True
+    except sqlite3.Error:
+        success = False
+
+    conn.close()
+    return success
+
+def get_subscribers(asset_id: int) -> list[int]:
+    """Возвращает список Telegram ID пользователей, подписанных на данный актив"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute('''SELECT user_id FROM subscriptions WHERE asset_id = ?''', (asset_id,))
+    rows = cursor.fetchall()
+
+    conn.close()
+    return [row[0] for row in rows]

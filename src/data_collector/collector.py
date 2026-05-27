@@ -26,7 +26,14 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
                 f"🕒 Время: {timestamp}"
             )
 
-            await bot.send_message(chat_id=ADMIN_ID, text=alert_msg, parse_mode="Markdown")
+            from src.database.db_manager import get_subscribers
+            subscribers = get_subscribers(asset_id)
+
+            for sub_id in subscribers:
+                try:
+                    await bot.send_message(chat_id=sub_id, text=alert_msg, parse_mode="Markdown")
+                except Exception as send_err:
+                    print(f"Не удалось отправить сообщение пользователю {sub_id}: {send_err}")
 
         print(f'''Цена {data['symbol']}: {data['last']} | Объем торгов: {data['baseVolume']}''')
 
