@@ -1,20 +1,39 @@
 from src.database.db_manager import get_recent_prices
 
-def check_volatility(asset_id: int) -> tuple[bool, float]:
+def analyze_market_trend(asset_id: int) -> tuple[str, bool, str]:
+    """
+    Анализирует историю цен, рассчитывает волатильность и тренд.
+    Возвращает кортеж: (predicted_direction, is_anomaly, anomaly_description)
+    """
     rows = get_recent_prices(asset_id, 5)
 
     if len(rows) < 2:
-        return (False, 0.0)
+        return "NEUTRAL", False, "Недостаточно данных для анализа тренда"
 
-    current_price = rows[-1][0]
-    old_price = rows[0][0]
+    prices = [row[0] for row in rows]
 
-    if old_price == 0:
-        return (False, 0.0)
+    current_price = prices[-1]
+    old_price = prices[0]
 
-    percent_change = (current_price - old_price) / old_price * 100
-    if abs(percent_change) >= 0.001:
-        return (True, percent_change)
+    percent_change = ((current_price - old_price) / old_price) * 100
+    is_anomaly = False
+    anomaly_description = f"Цена стабильна. Изменение: {percent_change:.3f}%"
 
-    return (False, percent_change)
+    if abs(percent_change) >= 0.01:
+        is_anomaly = True
+        direction_word = "взлет" if percent_change > 0 else "падение"
+        anomaly_description = f"Фиксация волатильности: {direction_word} цены на {abs(percent_change):.3f}%."
+
+    ## метод пересечения скользящих средних
+    fast_ma = sum(prices[-2:]) / 2 ## быстрая МА (среднее по 2 последним тикам)
+    slow_ma = sum(prices) / len(prices) ## медленная МА (среднее по 5)
+
+    if fast_ma > slow_ma:
+        predicted_direction = "PUMP"
+    elif fast_ma < slow_ma:
+        predicted_direction = "DUMP"
+    else:
+        predicted_direction = "STABLE"
+
+    return predicted_direction, is_anomaly, anomaly_description
 
