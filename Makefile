@@ -1,5 +1,5 @@
 VENV = .venv
-PYTHON = python3
+PYTHON = $(VENV)/bin/python
 
 help:
 	@echo "Доступные команды для разработки:"
