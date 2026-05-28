@@ -37,7 +37,10 @@ def after_subscription_keyboard():
         InlineKeyboardButton(text="➕ Подписаться ещё", callback_data="nav_subscribe"),
         InlineKeyboardButton(text="📋 Мои подписки", callback_data="nav_subscriptions"),
     )
-    builder.row(InlineKeyboardButton(text="🏠 Главное меню", callback_data="nav_menu"))
+    builder.row(
+        InlineKeyboardButton(text="➖ Отписаться", callback_data="nav_unsubscribe"),
+        InlineKeyboardButton(text="🏠 Главное меню", callback_data="nav_menu"),
+    )
     return builder.as_markup()
 
 

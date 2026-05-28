@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from aiogram import Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, InlineKeyboardButton, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -30,7 +31,22 @@ from src.database.db_manager import (
 router = Router()
 
 
-async def show_subscribe_menu(msg: Message, user_id: int):
+async def edit_or_notify(callback_query: CallbackQuery, text: str, reply_markup=None):
+    try:
+        await callback_query.message.edit_text(
+            text,
+            reply_markup=reply_markup,
+            parse_mode="Markdown",
+        )
+        await callback_query.answer("Готово")
+    except TelegramBadRequest as exc:
+        if "message is not modified" in str(exc):
+            await callback_query.answer("Раздел уже открыт")
+        else:
+            raise
+
+
+def build_subscribe_keyboard(user_id: int):
     all_assets = get_all_assets()
     user_subscriptions = get_user_subscriptions(user_id)
 
@@ -46,18 +62,27 @@ async def show_subscribe_menu(msg: Message, user_id: int):
             callback_data=f"sub_{ticker}"
         ))
 
-    builder.adjust(2)
-
     if not has_available_assets:
+        return None
+
+    builder.adjust(2)
+    builder.row(InlineKeyboardButton(text="🏠 Выйти в главное меню", callback_data="nav_menu"))
+    return builder.as_markup()
+
+
+async def show_subscribe_menu(msg: Message, user_id: int):
+    keyboard = build_subscribe_keyboard(user_id)
+
+    if keyboard is None:
         await msg.answer(
             "📋 Ты уже подписан на все доступные в системе активы!",
-            reply_markup=main_menu_keyboard,
+            reply_markup=main_navigation_keyboard(),
         )
         return
 
     await msg.answer(
         "🎯 **Выбери монету для подписки:**",
-        reply_markup=builder.as_markup(),
+        reply_markup=keyboard,
         parse_mode="Markdown"
     )
 
@@ -73,10 +98,22 @@ async def process_subscribe_callback(callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
 
     if add_subscription(user_id, ticker):
+        keyboard = build_subscribe_keyboard(user_id)
         await callback_query.answer(f"Подписка на {ticker} оформлена!")
+
+        if keyboard is None:
+            await callback_query.message.edit_text(
+                f"✅ Ты успешно подписался на уведомления по **{ticker}**!\n\n"
+                "📋 Теперь ты подписан на все доступные в системе активы!",
+                reply_markup=main_navigation_keyboard(),
+                parse_mode="Markdown"
+            )
+            return
+
         await callback_query.message.edit_text(
-            f"✅ Ты успешно подписался на уведомления по **{ticker}**!",
-            reply_markup=after_subscription_keyboard(),
+            f"✅ Ты успешно подписался на уведомления по **{ticker}**!\n\n"
+            "🎯 **Выбери следующую монету для подписки:**",
+            reply_markup=keyboard,
             parse_mode="Markdown"
         )
     else:
@@ -142,26 +179,29 @@ async def start_cmd(msg: Message):
 
 
 async def show_subscriptions(msg: Message, user_id: int):
+    text, keyboard = build_subscriptions_view(user_id)
+    await msg.answer(
+        text,
+        reply_markup=keyboard,
+        parse_mode="Markdown",
+    )
+
+
+def build_subscriptions_view(user_id: int):
     subscriptions = get_user_subscriptions(user_id)
     if not subscriptions:
-        await msg.answer(
+        return (
             "⚠️ У тебя пока нет активных подписок.\n\n"
             "Чтобы подписаться, нажми кнопку ниже.",
-            reply_markup=after_subscription_keyboard(),
-            parse_mode="Markdown"
+            after_subscription_keyboard(),
         )
-        return
 
     response = "📋 **Твои активные подписки:**\n\n"
     for ticker in subscriptions:
         response += f"🔹 `{ticker}`\n"
 
     response += "\nЧтобы отписаться, нажми кнопку ниже."
-    await msg.answer(
-        response,
-        reply_markup=after_subscription_keyboard(),
-        parse_mode="Markdown",
-    )
+    return response, after_subscription_keyboard()
 
 
 @router.message(Command('subscriptions'))
@@ -170,16 +210,23 @@ async def my_subscriptions_cmd(msg: Message):
 
 
 async def show_unsubscribe_menu(msg: Message, user_id: int):
+    text, keyboard = build_unsubscribe_view(user_id)
+    await msg.answer(
+        text,
+        reply_markup=keyboard,
+        parse_mode="Markdown"
+    )
+
+
+def build_unsubscribe_view(user_id: int):
     user_subs = get_user_subscriptions(user_id)
 
     if not user_subs:
-        await msg.answer(
+        return (
             "⚠️ У тебя пока нет активных подписок.\n\n"
             "Чтобы подписаться, нажми кнопку ниже.",
-            reply_markup=after_subscription_keyboard(),
-            parse_mode="Markdown"
+            main_navigation_keyboard(),
         )
-        return
 
     builder = InlineKeyboardBuilder()
     for ticker in user_subs:
@@ -189,11 +236,11 @@ async def show_unsubscribe_menu(msg: Message, user_id: int):
         ))
 
     builder.adjust(2)
+    builder.row(InlineKeyboardButton(text="🏠 Выйти в главное меню", callback_data="nav_menu"))
 
-    await msg.answer(
+    return (
         "🗑 **Выбери монету, от которой хочешь отписаться:**",
-        reply_markup=builder.as_markup(),
-        parse_mode="Markdown"
+        builder.as_markup(),
     )
 
 
@@ -208,10 +255,11 @@ async def process_unsubscribe_callback(callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
 
     if remove_subscription(user_id, ticker):
+        text, keyboard = build_unsubscribe_view(user_id)
         await callback_query.answer(f"Отписка от {ticker} выполнена.")
         await callback_query.message.edit_text(
-            f"✅ Успешно отписался от уведомлений по **{ticker}**!",
-            reply_markup=after_subscription_keyboard(),
+            f"✅ Успешно отписался от уведомлений по **{ticker}**!\n\n{text}",
+            reply_markup=keyboard,
             parse_mode="Markdown"
         )
     else:
@@ -258,19 +306,42 @@ async def process_navigation_callback(callback_query: CallbackQuery):
     msg = callback_query.message
     user_id = callback_query.from_user.id
 
-    await callback_query.answer()
-
     if action == "status":
-        await msg.answer(
-            build_status_text(),
-            reply_markup=status_refresh_keyboard(),
-            parse_mode="Markdown",
-        )
+        try:
+            await msg.edit_text(
+                build_status_text(),
+                reply_markup=status_refresh_keyboard(),
+                parse_mode="Markdown",
+            )
+            await callback_query.answer("Данные обновлены")
+        except TelegramBadRequest as exc:
+            if "message is not modified" in str(exc):
+                await callback_query.answer("Данные уже актуальны")
+            else:
+                raise
     elif action == "subscribe":
-        await show_subscribe_menu(msg, user_id)
+        keyboard = build_subscribe_keyboard(user_id)
+        if keyboard is None:
+            await edit_or_notify(
+                callback_query,
+                "📋 Ты уже подписан на все доступные в системе активы!",
+                main_navigation_keyboard(),
+            )
+        else:
+            await edit_or_notify(
+                callback_query,
+                "🎯 **Выбери монету для подписки:**",
+                keyboard,
+            )
     elif action == "unsubscribe":
-        await show_unsubscribe_menu(msg, user_id)
+        text, keyboard = build_unsubscribe_view(user_id)
+        await edit_or_notify(callback_query, text, keyboard)
     elif action == "subscriptions":
-        await show_subscriptions(msg, user_id)
+        text, keyboard = build_subscriptions_view(user_id)
+        await edit_or_notify(callback_query, text, keyboard)
     elif action == "menu":
-        await msg.answer("Главное меню:", reply_markup=main_navigation_keyboard())
+        await edit_or_notify(
+            callback_query,
+            "Главное меню:",
+            main_navigation_keyboard(),
+        )
