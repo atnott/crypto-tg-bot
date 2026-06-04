@@ -3,11 +3,15 @@ PYTHON = $(VENV)/bin/python
 
 help:
 	@echo "Доступные команды для разработки:"
+	@echo "  make test       - Запустить unit-тесты"
 	@echo "  make seed       - Запустить сидзер базы данных (наполнение assets)"
 	@echo "  make collector  - Запустить асинхронный сборщик маркет-даты"
 	@echo "  make bot        - Запустить Telegram-бота"
 	@echo "  make clean      - Очистить кэш компиляции Python (__pycache__)"
 	@echo "  make init       - Создание таблиц"
+
+test:
+	$(PYTHON) -m pytest
 
 seed:
 	$(PYTHON) -m src.database.seed

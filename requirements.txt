@@ -22,6 +22,7 @@ pycparser==3.0
 pydantic==2.13.4
 pydantic_core==2.46.4
 python-dotenv==1.2.2
+pytest
 requests==2.34.2
 setuptools==82.0.1
 typing-inspection==0.4.2
