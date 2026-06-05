@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crypto-analytics"
-version = "1.0.0"
+version = "1.0.1"
 description = "Модуль расчёта волатильности и рыночных аномалий для криптовалют"
-readme = "README.md"
+readme = "src/analytics/README_PACKAGE.md"
 authors = [
-    { name = "Anton", email = "anton@example.com" }
+    { name = "Anton", email = "twinkidr@gmail.com" },
+    { name = "Maxim", email = "maks256maksik@gmail.com" }
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
