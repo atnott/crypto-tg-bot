@@ -1,9 +1,13 @@
 from pathlib import Path
+import os
 import sys
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT_DIR))
 sys.path.insert(0, str(ROOT_DIR / "src"))
+
+os.environ.setdefault("BOT_TOKEN", "123456:sphinx-docs-token")
+os.environ.setdefault("ADMIN_ID", "0")
 
 project = "Crypto Telegram Bot"
 author = "Anton, Maxim"
