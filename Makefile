@@ -1,10 +1,12 @@
 VENV = .venv
 PYTHON = $(VENV)/bin/python
+PIP = $(VENV)/bin/pip
 
-.PHONY: docs test seed collector bot clean init
+.PHONY: help install init seed collector bot test docs clean docker-up docker-down
 
 help:
-	@echo "📌 Доступные команды для разработки:"
+	@echo "Доступные команды для разработки:"
+	@echo "  make install     - Установить зависимости"
 	@echo "  make init        - Инициализировать схему базы данных"
 	@echo "  make seed        - Заполнить БД базовыми монетами (seed)"
 	@echo "  make collector   - Запустить сборщик котировок локально"
@@ -14,6 +16,10 @@ help:
 	@echo "  make clean       - Очистить кэш компиляции (__pycache__)"
 	@echo "  make docker-up   - Запустить всю систему в Docker контейнерах"
 	@echo "  make docker-down - Остановить Docker контейнеры и очистить диски"
+
+install:
+	$(PIP) install -r requirements.txt
+	$(PIP) install -e .
 
 init:
 	$(PYTHON) -m src.database.schema
