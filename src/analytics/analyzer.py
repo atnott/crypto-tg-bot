@@ -1,16 +1,11 @@
-from src.database.db_manager import get_recent_prices
-
-def analyze_market_trend(asset_id: int) -> tuple[str, bool, str]:
+def analyze_market_trend(prices: list[float]) -> tuple[str, bool, str]:
     """
     Анализирует историю цен, рассчитывает волатильность и тренд.
     Возвращает кортеж: (predicted_direction, is_anomaly, anomaly_description)
     """
-    rows = get_recent_prices(asset_id, 5)
 
-    if len(rows) < 2:
+    if len(prices) < 2:
         return "NEUTRAL", False, "Недостаточно данных для анализа тренда"
-
-    prices = [row[0] for row in rows]
 
     current_price = prices[-1]
     old_price = prices[0]

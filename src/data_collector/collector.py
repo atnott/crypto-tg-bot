@@ -1,5 +1,5 @@
 import ccxt
-from src.database.db_manager import get_all_assets, add_price_record, log_analytics, get_subscribers, archive_notification
+from src.database.db_manager import get_all_assets, add_price_record, log_analytics, get_subscribers, archive_notification, get_recent_prices
 from src.analytics.analyzer import analyze_market_trend
 from src.bot.bot_main import bot
 import asyncio
@@ -15,7 +15,9 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
 
         add_price_record(asset_id, price, volume, timestamp)
 
-        direction, is_anomaly, description = analyze_market_trend(asset_id)
+        rows = get_recent_prices(asset_id, 5)
+        prices_list = [row[0] for row in rows]
+        direction, is_anomaly, description = analyze_market_trend(prices_list)
 
         log_analytics(asset_id, direction, int(is_anomaly), description, timestamp)
 
