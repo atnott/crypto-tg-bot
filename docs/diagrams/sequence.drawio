@@ -1,0 +1,65 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Страница-1" id="xtI6SMeDE91cVUBjOqX5">
+    <mxGraphModel dx="307" dy="-387" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="j7qWslBWPPiID1KN-1d0-85" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="Sender" vertex="1">
+          <mxGeometry height="591" width="150" x="1345" y="1230" as="geometry" />
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-86" parent="j7qWslBWPPiID1KN-1d0-85" style="points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="" vertex="1">
+          <mxGeometry width="10" x="70" as="geometry" />
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-87" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="GUI (Bot)" vertex="1">
+          <mxGeometry height="591" width="150" x="1550" y="1230" as="geometry" />
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-88" parent="j7qWslBWPPiID1KN-1d0-87" style="points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="" vertex="1">
+          <mxGeometry height="144" width="10" x="70" y="342" as="geometry" />
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-89" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="Database" vertex="1">
+          <mxGeometry height="591" width="150" x="1750" y="1230" as="geometry" />
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-90" parent="j7qWslBWPPiID1KN-1d0-89" style="points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="" vertex="1">
+          <mxGeometry height="38" width="10" x="70" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-91" edge="1" parent="1" source="j7qWslBWPPiID1KN-1d0-85" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" target="j7qWslBWPPiID1KN-1d0-88" value="Взаимодействие">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1533" y="1572" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-92" edge="1" parent="1" source="j7qWslBWPPiID1KN-1d0-88" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" target="j7qWslBWPPiID1KN-1d0-90" value="Запрос данных">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1736" y="1620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-93" edge="1" parent="1" source="j7qWslBWPPiID1KN-1d0-89" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" target="j7qWslBWPPiID1KN-1d0-88" value="Ответ">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1737" y="1668" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-94" edge="1" parent="1" source="j7qWslBWPPiID1KN-1d0-88" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" target="j7qWslBWPPiID1KN-1d0-85" value="Обновление меню">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1534" y="1716" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-95" parent="1" style="fillColor=#ffff88;strokeColor=#9E916F;fontColor=light-dark(#333333,#cccccc);" value="Взаимодействует&#xa;через Telegram GUI" vertex="1">
+          <mxGeometry height="67" width="161" x="1340" y="1305" as="geometry" />
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-96" parent="1" style="fillColor=#ffff88;strokeColor=#9E916F;fontColor=light-dark(#333333,#cccccc);" value="Обрабатывает&#xa;нажатия инлайн-&#xa;кнопок меню бота" vertex="1">
+          <mxGeometry height="86" width="152" x="1549" y="1372" as="geometry" />
+        </mxCell>
+        <mxCell id="j7qWslBWPPiID1KN-1d0-97" parent="1" style="fillColor=#ffff88;strokeColor=#9E916F;fontColor=light-dark(#333333,#cccccc);" value="SQLite в Shared&#xa;Volume. Проверяет&#xa;Foreign Keys" vertex="1">
+          <mxGeometry height="86" width="159" x="1746" y="1458" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
