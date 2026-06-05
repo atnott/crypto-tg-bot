@@ -25,4 +25,4 @@ ADMIN_ID = os.getenv('ADMIN_ID')
 if not BOT_TOKEN:
     raise ValueError("❌ Критическая ошибка: Переменная окружения BOT_TOKEN не задана в файле .env!")
 
-DB_PATH = str(BASE_DIR / 'data' / 'crypto_bot.sqlite')
+DB_PATH = os.getenv('DB_PATH', str(BASE_DIR / 'data' / 'crypto_bot.sqlite'))
