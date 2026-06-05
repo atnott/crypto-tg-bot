@@ -9,7 +9,6 @@ Crypto Telegram Bot
    :caption: Содержание
 
    overview
-   contributors
    domain
    architecture
    api
