@@ -7,12 +7,14 @@ name = "crypto-analytics"
 version = "1.0.1"
 description = "Модуль расчёта волатильности и рыночных аномалий для криптовалют"
 readme = "src/analytics/README_PACKAGE.md"
+license = { file = "LICENSE" }
 authors = [
     { name = "Anton", email = "twinkidr@gmail.com" },
     { name = "Maxim", email = "maks256maksik@gmail.com" }
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 requires-python = ">=3.9"
