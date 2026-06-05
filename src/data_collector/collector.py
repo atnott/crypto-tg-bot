@@ -1,3 +1,10 @@
+"""Асинхронный сборщик рыночных данных и отправки алертов.
+
+Модуль получает котировки с Kraken через ``ccxt``, сохраняет историю цен,
+запускает анализ тренда и отправляет Telegram-уведомления подписчикам при
+обнаружении аномальной волатильности.
+"""
+
 import ccxt
 from src.database.db_manager import get_all_assets, add_price_record, log_analytics, get_subscribers, archive_notification, get_recent_prices
 from src.analytics.analyzer import analyze_market_trend
@@ -9,6 +16,17 @@ from src.database.seed import seed_assets
 exchange = ccxt.kraken()
 
 async def fetch_market_data(asset_id: int, ticker: str) -> None:
+    """Получает котировку актива, сохраняет её и обрабатывает результат анализа.
+
+    Функция выполняет один цикл обработки для конкретного актива: запрашивает
+    тикер на Kraken, сохраняет цену в ``price_history``, передаёт последние цены
+    в аналитический модуль и, если обнаружена аномалия, отправляет уведомления
+    подписчикам.
+
+    Args:
+        asset_id: Идентификатор актива из таблицы ``assets``.
+        ticker: Биржевой тикер, используемый в запросе к Kraken.
+    """
     try:
         data = exchange.fetch_ticker(ticker)
         price = data['last']
@@ -48,6 +66,12 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
         print(f'Ошибка при сборе {ticker}: {e}')
 
 async def main_loop():
+    """Запускает бесконечный цикл сбора данных по всем активам.
+
+    Перед стартом цикла функция создаёт таблицы, заполняет справочник активов,
+    получает список тикеров из базы данных и последовательно обрабатывает их с
+    небольшими паузами между запросами.
+    """
 
     db_init()
     seed_assets()
