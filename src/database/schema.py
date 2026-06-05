@@ -1,8 +1,17 @@
+"""Создание структуры SQLite-базы данных проекта."""
+
 import sqlite3
 from pathlib import Path
 from src.config import DB_PATH as db_path
 
 def db_init():
+    """Создаёт директорию базы данных и все необходимые таблицы.
+
+    Функция безопасна для повторного запуска: каждая таблица создаётся через
+    ``CREATE TABLE IF NOT EXISTS``. В схему входят справочник активов, история
+    цен, пользователи Telegram, подписки, результаты аналитики и архив
+    уведомлений.
+    """
 
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
 
