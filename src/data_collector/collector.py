@@ -3,6 +3,8 @@ from src.database.db_manager import get_all_assets, add_price_record, log_analyt
 from src.analytics.analyzer import analyze_market_trend
 from src.bot.bot_main import bot
 import asyncio
+from src.database.schema import db_init
+from src.database.seed import seed_assets
 
 exchange = ccxt.kraken()
 
@@ -46,6 +48,10 @@ async def fetch_market_data(asset_id: int, ticker: str) -> None:
         print(f'Ошибка при сборе {ticker}: {e}')
 
 async def main_loop():
+
+    db_init()
+    seed_assets()
+
     assets = get_all_assets()
     while True:
         for asset_id, ticker in assets:

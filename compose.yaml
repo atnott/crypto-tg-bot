@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  collector:
+    build: .
+    command: python -m src.data_collector.collector
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - crypto_data:/app/data
+
+  bot:
+    build: .
+    command: python -m src.bot.bot_main
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - crypto_data:/app/data
+    depends_on:
+      - collector
+
+volumes:
+  crypto_data:
