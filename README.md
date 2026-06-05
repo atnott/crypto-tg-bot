@@ -26,17 +26,38 @@ Open-source система для мониторинга аномалий кур
 - **Market Data:** ccxt
 - **Database:** SQLite
 - **Configuration:** python-dotenv
-- **Infrastructure:** Makefile
+- **Infrastructure:** Makefile, Docker Compose
+
+## Архитектура
+
+![Схема архитектуры](./images/schema.png)
+
+Проект запускается как два процесса: Telegram-бот обрабатывает пользовательские
+команды и подписки, а сборщик получает котировки с Kraken, сохраняет данные в
+SQLite и отправляет уведомления при обнаружении аномалий. Подробные диаграммы
+архитектуры, сценариев и базы данных находятся в
+[docs/architecture.md](./docs/architecture.md).
 
 ## Структура проекта
 
 ```text
 .
-├── main.py
+├── .env.example
 ├── Makefile
+├── Dockerfile
+├── compose.yaml
+├── pyproject.toml
 ├── requirements.txt
+├── requirements-dev.txt
 ├── README.md
+├── CONTRIBUTING.md
+├── LICENSE
 ├── docs/
+│   ├── api.rst
+│   ├── architecture.md
+│   ├── diagrams/
+│   ├── domain.md
+│   ├── overview.md
 │   └── dev_log.md
 ├── images/
 │   ├── schema.png
@@ -56,6 +77,7 @@ Open-source система для мониторинга аномалий кур
         ├── db_manager.py
         ├── schema.py
         └── seed.py
+└── tests/
 ```
 
 ## Основные модули
@@ -80,20 +102,26 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-2. Установите зависимости:
+2. Установите runtime-зависимости:
 
 ```bash
-pip install -r requirements.txt
+make install
+```
+
+Для разработки, тестов, сборки документации и публикации пакета используйте:
+
+```bash
+make install-dev
 ```
 
 3. Создайте файл `.env` в корне проекта:
 
 ```env
 BOT_TOKEN=your_telegram_bot_token
-ADMIN_ID=your_telegram_id
+DB_PATH=data/crypto_bot.sqlite
 ```
 
-`BOT_TOKEN` обязателен для запуска бота и сборщика, потому что сборщик использует объект бота для отправки уведомлений подписчикам.
+`BOT_TOKEN` обязателен для запуска бота и сборщика, потому что сборщик использует объект бота для отправки уведомлений подписчикам. `DB_PATH` можно не задавать: по умолчанию используется `data/crypto_bot.sqlite`.
 
 ## Запуск
 
@@ -116,13 +144,45 @@ make bot
 make collector
 ```
 
+Для запуска обоих процессов в Docker:
+
+```bash
+make docker-up
+```
+
+Остановить контейнеры и удалить Docker volume можно командой:
+
+```bash
+make docker-down
+```
+
+## Проверка
+
+Запустить тесты:
+
+```bash
+make test
+```
+
+Собрать HTML-документацию:
+
+```bash
+make docs
+```
+
 ## Команды Makefile
 
+- `make install` — установить runtime-зависимости.
+- `make install-dev` — установить зависимости для разработки, тестов и документации.
 - `make init` — создать таблицы базы данных.
 - `make seed` — заполнить таблицу `assets`.
 - `make bot` — запустить Telegram-бота.
 - `make collector` — запустить сборщик котировок.
+- `make test` — запустить unit-тесты.
+- `make docs` — собрать HTML-документацию Sphinx.
 - `make clean` — удалить `__pycache__`.
+- `make docker-up` — запустить бота и сборщик в Docker Compose.
+- `make docker-down` — остановить Docker Compose и удалить volume с данными.
 
 ## Команды Telegram-бота
 
@@ -137,7 +197,12 @@ make collector
 
 ## Документация
 
-Подробный дневник разработки и описание базы данных находятся в [docs/dev_log.md](./docs/dev_log.md).
+- [Обзор проекта](./docs/overview.md)
+- [Предметная область](./docs/domain.md)
+- [Архитектура и диаграммы](./docs/architecture.md)
+- [API-документация](./docs/api.rst)
+- [Как стать участником проекта](./CONTRIBUTING.md)
+- [Дневник разработки](./docs/dev_log.md)
 
 ## Лицензия
 
