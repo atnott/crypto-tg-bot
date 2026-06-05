@@ -27,7 +27,7 @@ def test_fetch_market_data_records_price_and_logs_analysis(monkeypatch):
         }
     )
     price_records = []
-    analyzed_assets = []
+    analyzed_prices = []
     analytics_records = []
 
     monkeypatch.setattr(collector, "exchange", exchange)
@@ -38,8 +38,13 @@ def test_fetch_market_data_records_price_and_logs_analysis(monkeypatch):
     )
     monkeypatch.setattr(
         collector,
+        "get_recent_prices",
+        lambda asset_id, limit: [(100.0, "2026-06-04T00:00:00"), (105.5, timestamp)],
+    )
+    monkeypatch.setattr(
+        collector,
         "analyze_market_trend",
-        lambda asset_id: analyzed_assets.append(asset_id)
+        lambda prices: analyzed_prices.append(prices)
         or ("STABLE", False, "Цена стабильна"),
     )
     monkeypatch.setattr(
@@ -52,7 +57,7 @@ def test_fetch_market_data_records_price_and_logs_analysis(monkeypatch):
 
     assert exchange.fetch_ticker_calls == ["BTC/USDT"]
     assert price_records == [(1, 105.5, 12.3, timestamp)]
-    assert analyzed_assets == [1]
+    assert analyzed_prices == [[100.0, 105.5]]
     assert analytics_records == [(1, "STABLE", 0, "Цена стабильна", timestamp)]
 
 
