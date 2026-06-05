@@ -1,7 +1,32 @@
+"""Вспомогательные функции анализа рынка для пакета ``crypto-analytics``.
+
+Модуль содержит чистую вычислительную логику: принимает историю цен и
+возвращает классификацию тренда без обращения к Telegram, Kraken или SQLite.
+"""
+
+
 def analyze_market_trend(prices: list[float]) -> tuple[str, bool, str]:
-    """
-    Анализирует историю цен, рассчитывает волатильность и тренд.
-    Возвращает кортеж: (predicted_direction, is_anomaly, anomaly_description)
+    """Анализирует историю цен и классифицирует краткосрочное движение рынка.
+
+    Функция сравнивает первую и последнюю цены, чтобы оценить волатильность,
+    и использует простое пересечение скользящих средних для определения
+    направления тренда. Быстрая скользящая средняя считается по двум последним
+    ценам, медленная — по всей переданной истории.
+
+    Args:
+        prices: История цен от старой к новой. Первая цена используется как
+            базовое значение для расчёта процентного изменения, поэтому она не
+            должна быть равна нулю.
+
+    Returns:
+        Кортеж ``(predicted_direction, is_anomaly, anomaly_description)``:
+
+        * ``predicted_direction`` — одно из значений ``PUMP``, ``DUMP``, ``STABLE`` или ``NEUTRAL``.
+        * ``is_anomaly`` — ``True``, если абсолютное изменение цены не меньше ``0.01%``.
+        * ``anomaly_description`` — человекочитаемое описание результата анализа.
+
+    Raises:
+        ZeroDivisionError: Возникает, если первая цена в ``prices`` равна ``0``.
     """
 
     if len(prices) < 2:
@@ -31,4 +56,3 @@ def analyze_market_trend(prices: list[float]) -> tuple[str, bool, str]:
         predicted_direction = "STABLE"
 
     return predicted_direction, is_anomaly, anomaly_description
-
