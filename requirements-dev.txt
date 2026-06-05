@@ -1,0 +1,7 @@
+# Development, testing, documentation, and package publishing dependencies.
+-r requirements.txt
+-r docs/requirements.txt
+
+pytest==9.0.3
+build==1.5.0
+twine==6.2.0

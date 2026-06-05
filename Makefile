@@ -2,12 +2,11 @@ VENV = .venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
 
-.PHONY: help install install-dev init seed collector bot test docs clean docker-up docker-down
+.PHONY: help install init seed collector bot test docs clean docker-up docker-down
 
 help:
 	@echo "Доступные команды для разработки:"
-	@echo "  make install     - Установить runtime-зависимости"
-	@echo "  make install-dev - Установить зависимости для разработки"
+	@echo "  make install     - Установить зависимости"
 	@echo "  make init        - Инициализировать схему базы данных"
 	@echo "  make seed        - Заполнить БД базовыми монетами (seed)"
 	@echo "  make collector   - Запустить сборщик котировок локально"
@@ -20,10 +19,6 @@ help:
 
 install:
 	$(PIP) install -r requirements.txt
-	$(PIP) install -e .
-
-install-dev:
-	$(PIP) install -r requirements-dev.txt
 	$(PIP) install -e .
 
 init:
