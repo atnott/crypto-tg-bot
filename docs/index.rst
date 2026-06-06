@@ -12,4 +12,5 @@ Crypto Telegram Bot
    domain
    architecture
    api
+   contributors
    dev_log
